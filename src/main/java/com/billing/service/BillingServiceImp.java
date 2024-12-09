@@ -8,12 +8,14 @@ import com.billing.repo.BillingHeaderRepository;
 import com.billing.repo.PaymentInformationRepository;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 @Service
+@Slf4j
 public class BillingServiceImp implements BillingService{
 
     private final RestTemplate restTemplate;
@@ -45,12 +47,11 @@ public class BillingServiceImp implements BillingService{
        var paymentUrl =url+ "/checkpayment?payment=" + paymentInformation.getPaymentMethod();
 
         var response = restTemplate.getForObject(paymentUrl, String.class);
-
+        log.info(response);
 
     }
 
     public void fallbackPayment(PaymentInformationDTO paymentInformationDTO, Throwable ex) {
-        System.out.println("Error calling payment service: " + ex.getMessage());
-        // "Fallback response: Unable to process payment for " + paymentInformationDTO.paymentMethod();
+        log.error("Error calling payment service: " + ex.getMessage());
     }
 }
